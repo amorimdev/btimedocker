@@ -1,0 +1,61 @@
+version: '2'
+
+services:
+    php:
+        build: .
+        ports:
+            - ${PORT_PHP}:9000
+        volumes:
+            - ./btimeapp:/var/www/btimeapp
+            - ./btimeweb:/var/www/btimeweb
+            - ./logs/btimeapp:/var/www/btimeapp/app/logs
+            - ./logs/btimeweb:/var/www/btimeweb/var/logs
+        links:
+            - mysql
+            - elasticsearch
+            - memcached
+            - rabbitmq
+            - redis
+
+    nginx:
+        build: nginx
+        ports:
+            - ${PORT_HTTP}:80
+        volumes_from:
+            - php
+        volumes:
+            - ./logs/nginx/:/var/log/nginx
+   
+    mysql:
+        image: mysql
+        ports:
+            - ${PORT_MYSQL}:3306
+        environment:
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+        volumes:
+            - ./btimeapp/dump:/docker-entrypoint-initdb.d
+
+    elasticsearch:
+        image: elasticsearch
+        ports:
+            - ${PORT_ELASTICSEARCH_1}:9200
+            - ${PORT_ELASTICSEARCH_2}:9300
+
+    memcached:
+        image: memcached
+        ports:
+            - ${PORT_MEMCACHED}:11211
+
+    rabbitmq:
+        image: rabbitmq
+        ports:
+            - ${PORT_RABBITMQ_1}:15672
+            - ${PORT_RABBITMQ_2}:5672
+
+    redis:
+        image: redis
+        ports:
+            - ${PORT_REDIS}:6379

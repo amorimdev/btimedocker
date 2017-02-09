@@ -1,0 +1,6 @@
+[submodule "btimeapp"]
+	path = btimeapp
+	url = git@github.com:Btime/btimeapp.git
+[submodule "btimeweb"]
+	path = btimeweb
+	url = git@github.com:Btime/btimeweb.git
